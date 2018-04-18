@@ -1,0 +1,75 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.example.initproject"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    //lambda必备
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    // 解决rx和pixture冲突问题
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
+
+    // 强制让所有模块都用相同的支持库版本。
+
+    configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+            def requested = details.requested
+            if (requested.group == 'com.android.support') {
+                if (!requested.name.startsWith("multidex")) {
+                    details.useVersion '26.1.0'
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:design:26.1.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    // butterknife
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    // PermissionDispatche库 更新会出问题的
+    compile 'com.github.hotchemi:permissionsdispatcher:2.3.2'
+    annotationProcessor 'com.github.hotchemi:permissionsdispatcher-processor:2.3.2'
+    // rx相关
+    compile 'io.reactivex.rxjava2:rxjava:2.1.11'
+    compile 'io.reactivex.rxjava2:rxandroid:2.0.2'
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.9.1'
+    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
+    // 图片选择器  注意包含了Glide4.5了
+    // 版本很高
+    implementation ('com.github.LuckSiege.PictureSelector:picture_library:v2.2.3')
+
+    //BottomBar
+    compile ('com.roughike:bottom-bar:2.3.1')
+    // 引入fragmentation
+    compile 'me.yokeyword:fragmentation:0.10.2'
+    // 引入MaterialDialog弹出框
+    implementation 'com.afollestad.material-dialogs:commons:0.9.6.0'
+}
